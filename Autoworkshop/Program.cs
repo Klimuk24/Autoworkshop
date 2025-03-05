@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using AutoWorkShop.Data;
+
 namespace AutoWorkShop
 {
     public class Program
@@ -6,6 +9,13 @@ namespace AutoWorkShop
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Добавление контекста базы данных
+            builder.Services.AddDbContext<AutoWorkshopContext>(options =>
+                options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+                ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+
+            // Добавление поддержки контроллеров и страниц Razor
+            builder.Services.AddControllersWithViews();
             // Add services to the container.
             builder.Services.AddRazorPages();
 
@@ -26,6 +36,9 @@ namespace AutoWorkShop
             app.UseAuthorization();
 
             app.MapStaticAssets();
+            app.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages()
                .WithStaticAssets();
 
